@@ -1,12 +1,18 @@
-import DataComponent from "./DataComponent";
+import { ThemeContext } from "./theme";
+import { useContext } from "react";
+import { Wrapper } from "./App.styles";
+import DataComponent from "./components/DataComponent";
 
-function App() {
+const App = () => {
+  const [{ theme }] = useContext(ThemeContext);
+
   return (
-    <div>
-      <h1>Pokedex App</h1>
+    <Wrapper
+      style={{ backgroundColor: theme.backgroundColor, color: theme.color }}
+    >
       <DataComponent />
-    </div>
+    </Wrapper>
   );
-}
+};
 
 export default App;
