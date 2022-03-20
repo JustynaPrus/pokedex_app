@@ -9,7 +9,6 @@ export const themes = {
     backgroundColor: "#FFFFFF",
     color: "#414141",
   },
-  colors: {},
 };
 
 export const ThemeContext = createContext();

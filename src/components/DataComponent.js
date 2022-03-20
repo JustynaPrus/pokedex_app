@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { MdDarkMode } from "react-icons/md";
+import { ImSpinner } from "react-icons/im";
 import { FiSun } from "react-icons/fi";
 import List from "./List";
-import Filter from "./Filter";
 import { Container, Wrapper, Header } from "./DataComponent.styles";
 import { ThemeContext } from "../theme";
 import { useContext } from "react";
@@ -16,6 +16,7 @@ const DataComponent = () => {
   const [error, setError] = useState(null);
 
   const [{ isDark }, toggleTheme] = useContext(ThemeContext);
+  const [filter, setFilter] = useState([]);
 
   const loadData = async () => {
     const data = await fetch(loadMore)
@@ -52,6 +53,23 @@ const DataComponent = () => {
     loadData();
   }, []);
 
+  function scrollTo() {
+    setTimeout(
+      () =>
+        window.scrollTo({
+          left: 0,
+          top: document.body.scrollHeight,
+          behavior: "smooth",
+        }),
+      1000
+    );
+  }
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    setFilter(e.target.value);
+  };
+
   if (error) {
     return <div>Error: {error.message}</div>;
   } else {
@@ -65,25 +83,53 @@ const DataComponent = () => {
             <MdDarkMode onClick={toggleTheme} size={20} />
           )}
         </Header>
-        <Filter />
+        <form>
+          <input
+            onChange={handleChange}
+            type="search"
+            name="search"
+            id="search"
+            autoComplete="off"
+            placeholder="Search for Pokemon"
+          />
+        </form>
         <Wrapper>
+          <p>Id</p>
           <p>Name</p>
           <p>Image</p>
           <p>Type</p>
           <p>Click on Pokemon for more info</p>
         </Wrapper>
-        {list.map((pokemon) => (
-          <List
-            loading={loading}
-            key={pokemon.id}
-            name={pokemon.name}
-            sprite={pokemon.sprites.other.dream_world.front_default}
-            type={pokemon.types[0].type.name}
-            weight={pokemon.weight}
-            height={pokemon.height}
-          />
-        ))}
-        <button onClick={() => loadData()}>Load more</button>
+        {loading ? (
+          <ImSpinner />
+        ) : (
+          <ul>
+            {list.map(
+              (pokemon) =>
+                pokemon.name.includes(filter) && (
+                  <List
+                    loading={loading}
+                    id={pokemon.id}
+                    key={pokemon.id}
+                    name={pokemon.name}
+                    sprite={pokemon.sprites.other.dream_world.front_default}
+                    type={pokemon.types[0].type.name}
+                    weight={pokemon.weight}
+                    height={pokemon.height}
+                  />
+                )
+            )}
+          </ul>
+        )}
+        <div id="one"></div>
+        <button
+          onClick={() => {
+            loadData();
+            scrollTo();
+          }}
+        >
+          Load more
+        </button>
       </Container>
     );
   }
